@@ -1,5 +1,6 @@
 # CmpE 487 Final Project
 ## Real-time Quiz App
+We did pair programming
 
 ### Usage
 ```bash
