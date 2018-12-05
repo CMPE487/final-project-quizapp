@@ -6,11 +6,8 @@ from quizServer import *
 from quizUtils import *
 from utils import *
 
-
-
 quizServer = None
 quizClient = QuizClient()
-quizClient.start()
 
 clear()
 while True:
@@ -33,15 +30,28 @@ while True:
         quiz_name = input("\n" + change_style("Enter quiz name", 'underline') + ": ")
         quizServer = QuizServer(Quiz(quiz_name))
         quizServer.start()
-
-        enter_continue()
+        while True:
+            print(quizServer.participants)
+            time.sleep(1)
 
     elif option == "2":
-        for source, name in quizClient.available_quizzes.items():
-            print(name)
-            
-        enter_continue()
+        for i, quiz_name in enumerate(quizClient.available_quizzes.values()):
+            print("\t", change_style(str(i + 1) + ")", 'bold'), " ", quiz_name)
+
+        id = input("\nEnter quiz ID: ")
+        if id is "":
+            clear()
+        else:
+            username = input("\nEnter username: ")
+            quiz_ip = list(quizClient.available_quizzes.keys())[int(id) - 1]
+            quizClient.enter(quiz_ip, username)
+            enter_continue()
+
     elif option == "3":
+        print_header("Discover quizzes")
+        quizClient.broadcast_quiz()
+        enter_continue()
+    elif option == "4":
         clear()
         print_notification("Good bye \n\n")
         os.system("pkill -9 \"python3 main.py\"")

@@ -12,9 +12,11 @@ def get_ip():
         s.close()
     return IP
 
+
 SELF_IP = get_ip()
 SUBNET = SELF_IP[:SELF_IP.rfind('.')]
 
 DISCOVERY_PORT = 5000  # TCP
+QUIZ_PORT = 5001  # TCP
 
-MESSAGE_TYPES = {"request": 0, "response": 1}
+MESSAGE_TYPES = {"request": 0, "response": 1, "enter": 3}

@@ -4,6 +4,8 @@ import json
 from _thread import *
 from config import *
 from utils import *
+from quizUtils import *
+
 
 class QuizServer:
 
@@ -13,13 +15,7 @@ class QuizServer:
 
     def start(self):
         self.listen_discovery_request()
-        self.broadcast_quiz()
-
-    def handle_discovery_request(self, message):
-        type, source, *tmp = message.split('|')
-
-        if int(type) == MESSAGE_TYPES["request"]:
-            start_new_thread(self.send_discovery_packet, (source,))
+        self.listen_quiz_request()
 
     def receive_discovery_request(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -28,29 +24,46 @@ class QuizServer:
             s.listen()
             while True:
                 conn, addr = s.accept()
-                with conn:
-                    message = ""
-                    while True:
-                        data = conn.recv(1024)
-                        if not data:
-                            # print(message)
-                            self.handle_discovery_request(message)
-                            # conn.send(b"OK")
-                            conn.close()
-                            break
-                        message = message + data.decode('utf_8')
+
+                data = conn.recv(1024)
+                if not data:
+                    break
+
+                message = str(data.decode('utf-8'))
+                type, source = message.split('|')
+                if int(type) == MESSAGE_TYPES["request"]:
+                    response = "{}|{}|{}".format(MESSAGE_TYPES["response"], SELF_IP, self.quiz.name)
+                    conn.send(response.encode())
+                conn.close()
+            s.close()
+
+    def receive_quiz_request(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((SELF_IP, QUIZ_PORT))
+            s.listen()
+            while True:
+                # TODO: quiz başladıysa kabul etme, olumsuz dön
+                conn, addr = s.accept()
+                data = conn.recv(1024)
+                if not data:
+                    break
+
+                message = str(data.decode('utf-8'))
+                type, source, username = message.split('|')
+
+                if int(type) == MESSAGE_TYPES['enter']:
+                    participant = Participant(username, source, 0, conn)
+                    participant.start()
+                    self.participants[source] = participant
+            s.close()
 
     def listen_discovery_request(self):
         discovery_thread = threading.Thread(target=self.receive_discovery_request)
         discovery_thread.setDaemon(True)
         discovery_thread.start()
 
-    def broadcast_quiz(self):
-        for i in range(1, 255):
-            target_ip = SUBNET + "." + str(i)
-            if target_ip != SELF_IP:
-                self.send_discovery_packet(target_ip)
-
-    def send_discovery_packet(self, target_ip):
-        message = "{}|{}|{}".format(MESSAGE_TYPES["response"], SELF_IP, self.quiz.name)
-        send_packet(target_ip, DISCOVERY_PORT, message)
+    def listen_quiz_request(self):
+        quiz_thread = threading.Thread(target=self.receive_quiz_request)
+        quiz_thread.setDaemon(True)
+        quiz_thread.start()
