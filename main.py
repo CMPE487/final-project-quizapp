@@ -6,6 +6,14 @@ from quizServer import *
 from quizUtils import *
 from utils import *
 
+
+def select_option(commands, message="Please enter your command"):
+    for i, command in enumerate(commands):
+        print("\t", change_style(str(i + 1) + ")", 'bold'), " ", command)
+
+    return input("\n" + change_style(message, 'underline') + ": ")
+
+
 quizServer = None
 quizClient = QuizClient()
 
@@ -13,22 +21,38 @@ clear()
 while True:
     print_header("AVAILABLE COMMANDS")
 
-    commands = [
+    option = select_option([
         "Start new quiz",
         "Enter a quiz",
         "Broadcast quiz",
         "Quit"
-    ]
+    ])
 
-    for i, command in enumerate(commands):
-        print("\t", change_style(str(i + 1) + ")", 'bold'), " ", command)
-
-    option = input("\n" + change_style("Please enter your command", 'underline') + ": ")
     if option == "1":
         clear()
-        print_header("Start new quiz")
+        print_header("Start New Quiz")
         quiz_name = input("\n" + change_style("Enter quiz name", 'underline') + ": ")
-        quizServer = QuizServer(Quiz(quiz_name))
+        quiz = Quiz(quiz_name)
+        clear()
+        print_header("Quiz Create Methods")
+        quiz_option = select_option(["Import from file", "Enter questions manually"])
+        if quiz_option == "1":
+            clear()
+            print_header("Import Quiz")
+            filename = input("Enter file name: ")
+            quiz.import_file(filename)
+        else:
+            clear()
+            print_header("Create Quiz")
+            question_count = input("How many questions your quiz has?  ")
+            for i in range(int(question_count)):
+                question = Question.from_input(i + 1)
+                quiz.add_question(question)
+
+        clear()
+        quiz.print()
+        enter_continue()
+        quizServer = QuizServer(quiz)
         quizServer.start()
         while True:
             print(quizServer.participants)

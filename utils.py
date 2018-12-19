@@ -46,7 +46,8 @@ def change_style(str, style):
         return "\033[01m\033[35m{}\033[00m".format(str)
     elif style == "sender":
         return "\033[01m\033[36m{}\033[00m".format(str)
-
+    elif style == "question":
+        return "\033[01m\033[36m{}\033[00m".format(str)
     return str
 
 

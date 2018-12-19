@@ -1,4 +1,5 @@
 from threading import Thread
+from utils import change_style, print_header
 
 
 class Quiz:
@@ -6,8 +7,25 @@ class Quiz:
         self.name = name
         self.questions = []
 
-    def add_question(self):
-        pass
+    def import_file(self, filename):
+        with open(filename) as file:
+            for line in file:
+                body, correct_answer, *options = line.split("|")
+                self.new_question(body, options, correct_answer)
+
+    def new_question(self, body, options, correct_answer):
+        self.questions.append(Question(body, options, correct_answer))
+
+    def add_question(self, question):
+        self.questions.append(question)
+
+    def print(self):
+        print_header("QUIZ: " + self.name)
+        for question in self.questions:
+            print()
+            print(change_style("Question: ", "question") + change_style(question.body, "bold"))
+            for i, option in enumerate(question.options):
+                print(change_style(str(i + 1) + ") ", "bold") + option)
 
 
 class Question:
@@ -15,6 +33,17 @@ class Question:
         self.body = body
         self.options = options
         self.correct_answer = correct_answer
+
+    @staticmethod
+    def from_input(order):
+        print(change_style("\n\nQuestion {}".format(order), "bold"))
+        body = input(change_style("Question body", 'underline') + ": ")
+        options = []
+        for i in range(4):
+            option = input(change_style("Option {}".format(i + 1), 'underline') + ": ")
+            options.append(option)
+        correct_answer = int(input(change_style("Correct answer", 'underline') + ": "))
+        return Question(body, options, correct_answer)
 
 
 class Participant(Thread):
