@@ -6,27 +6,17 @@ from quizServer import *
 from quizUtils import *
 from utils import *
 
-
-def select_option(commands, message="Please enter your command"):
-    for i, command in enumerate(commands):
-        print("\t", change_style(str(i + 1) + ")", 'bold'), " ", command)
-
-    return input("\n" + change_style(message, 'underline') + ": ")
-
-
-quizServer = None
-quizClient = QuizClient()
+quiz_server = None
+quiz_client = QuizClient()
 
 clear()
 while True:
-    print_header("AVAILABLE COMMANDS")
-
     option = select_option([
         "Start new quiz",
         "Enter a quiz",
         "Broadcast quiz",
         "Quit"
-    ])
+    ], header="AVAILABLE COMMANDS")
 
     if option == "1":
         clear()
@@ -34,8 +24,7 @@ while True:
         quiz_name = input("\n" + change_style("Enter quiz name", 'underline') + ": ")
         quiz = Quiz(quiz_name)
         clear()
-        print_header("Quiz Create Methods")
-        quiz_option = select_option(["Import from file", "Enter questions manually"])
+        quiz_option = select_option(["Import from file", "Enter questions manually"], header="Quiz Create Methods")
         if quiz_option == "1":
             clear()
             print_header("Import Quiz")
@@ -52,29 +41,28 @@ while True:
         clear()
         quiz.print()
         enter_continue()
-        quizServer = QuizServer(quiz)
-        quizServer.listen()
+        quiz_server = QuizServer(quiz)
+        quiz_server.listen()
         print_header("QUIZ: " + quiz.name)
         print(change_style("\n\nWAITING FOR NEW PARTICIPANTS\n\n", 'bold'))
         tmp = input("Enter for start quiz")
-
+        quiz_server.start()
     elif option == "2":
-        for i, quiz_name in enumerate(quizClient.available_quizzes.values()):
-            print("\t", change_style(str(i + 1) + ")", 'bold'), " ", quiz_name)
+        quiz_client.broadcast_quiz(True)
+        clear()
+        id = select_option(quiz_client.available_quizzes.values(), prompt="Enter quiz ID", header="Enter a Quiz")
 
-        id = input("\nEnter quiz ID: ")
         if id is "":
             clear()
         else:
             username = input("\nEnter username: ")
-            quiz_ip = list(quizClient.available_quizzes.keys())[int(id) - 1]
-            quizClient.enter(quiz_ip, username)
-            enter_continue()
+            quiz_ip = list(quiz_client.available_quizzes.keys())[int(id) - 1]
+            quiz_client.enter(quiz_ip, username)
 
     elif option == "3":
+        clear()
         print_header("Discover quizzes")
-        quizClient.broadcast_quiz()
-        enter_continue()
+        quiz_client.broadcast_quiz(False)
     elif option == "4":
         clear()
         print_notification("Good bye \n\n")

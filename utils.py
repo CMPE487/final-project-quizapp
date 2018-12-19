@@ -1,5 +1,7 @@
 import os
 import socket
+import sys
+import select
 
 
 def send_packet(host, port, message):
@@ -10,13 +12,38 @@ def send_packet(host, port, message):
             s.send(message.encode('utf-8'))
             s.close()
     except Exception as ex:
-        #print("Error while sending packet: " + message)
-        #print(ex.__str__() + " " + str(port))
+        # print("Error while sending packet: " + message)
+        # print(ex.__str__() + " " + str(port))
         pass
 
 
 def clear():
     os.system('clear')
+
+
+def select_option(commands, prompt="Please enter your command", is_active=True, header=None, timeout=None):
+    if header:
+        print_header(header)
+
+    for i, command in enumerate(commands):
+        print("\t", change_style(str(i + 1) + ")", 'bold'), " ", command)
+
+    if is_active:
+        if timeout:
+            print("\n" + change_style(prompt, 'underline') + ": ")
+            return timed_input(timeout)
+        else:
+            return input("\n" + change_style(prompt, 'underline') + ": ")
+    else:
+        print("\n" + change_style(prompt, 'underline') + ": ")
+
+
+def timed_input(timeout=10):
+    i, o, e = select.select([sys.stdin], [], [], timeout)
+    if i:
+        return sys.stdin.readline().strip()
+
+    return None
 
 
 def enter_continue():
@@ -54,6 +81,12 @@ def change_style(str, style):
 def print_notification(str):
     print("\a \033[s \033[100F \033[2K \r {} {}  \033[u".format(change_style(" [!] ", "bold"),
                                                                 change_style(str + " ", "success")), end="")
+
+
+def print_timer(count):
+    sym = "|" if count % 2 == 0 else "–"
+    print("\a \033[s \033[100F \033[2K \r{} {}\033[u \033[2D".format(change_style("Remaining Time: ", "underlined").rjust(50),
+                                                               change_style(str(count).rjust(2) + " seconds " + sym, "bold")), end="")
 
 
 def print_error(str):

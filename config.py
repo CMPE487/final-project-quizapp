@@ -19,4 +19,16 @@ SUBNET = SELF_IP[:SELF_IP.rfind('.')]
 DISCOVERY_PORT = 5000  # TCP
 QUIZ_PORT = 5001  # TCP
 
-MESSAGE_TYPES = {"request": 0, "response": 1, "enter": 3}
+QUESTION_TIME = 10
+
+MESSAGE_TYPES = {
+    "request": 0,
+    "response": 1,
+    "enter": 2,
+    "success": 3,
+    "error": 4,
+    "question": 5,
+    "answer": 6,
+    "answer_response": 7,
+    "result": 8
+}
