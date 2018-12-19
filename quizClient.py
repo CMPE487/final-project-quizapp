@@ -1,11 +1,4 @@
-import queue
-import socket
-import json
-from quizUtils import *
-import threading
-import time
 from config import *
-from _thread import *
 from utils import *
 
 
@@ -24,15 +17,6 @@ class QuizClient():
             target_ip = SUBNET + "." + str(i)
             # if target_ip != SELF_IP:
             start_new_thread(self.send_discovery_packet, (target_ip, print))
-
-    def init_timer(self, count):
-        while count >= 0:
-            print_timer(count)
-            time.sleep(1)
-            count -= 1
-
-    def start_timer(self, count):
-        start_new_thread(self.init_timer, (count,))
 
     def send_discovery_packet(self, target_ip, print):
         message = "{}|{}".format(MESSAGE_TYPES["request"], SELF_IP)
@@ -88,7 +72,7 @@ class QuizClient():
                     options = parts[2:]
                     self.print_status()
                     print(change_style("\n\nQuestion {}: ".format(number), "question") + change_style(body, "bold"))
-                    self.start_timer(QUESTION_TIME)
+                    start_timer(QUESTION_TIME)
                     answer = select_option(options, prompt="Your answer", timeout=QUESTION_TIME)
                     if answer:
                         message = "{}|{}|{}".format(MESSAGE_TYPES["answer"], number, answer)

@@ -1,7 +1,4 @@
 import threading
-import os
-import json
-from _thread import *
 from config import *
 from utils import *
 from quizUtils import *
@@ -36,13 +33,16 @@ class QuizServer:
 
             self.broadcast_message(message)
             print_header("Waiting for answers from participants")
+            start_timer(QUESTION_TIME + 2)
             time.sleep(QUESTION_TIME + 2)
             clear()
             self.print_scores()
-            enter_continue()
+            if number < len(self.quiz.questions) - 1:
+                enter_continue()
         self.end()
 
     def end(self):
+        clear()
         message = "{}".format(MESSAGE_TYPES["result"])
         sorted_participants = sorted(self.participants.values(), key=lambda x: x.score, reverse=True)
         for p in sorted_participants:
@@ -53,6 +53,7 @@ class QuizServer:
             p.close()
         self.discovery_socket.close()
         self.quiz_socket.close()
+        print_header("END OF THE QUIZ")
         enter_continue()
 
     def print_scores(self):

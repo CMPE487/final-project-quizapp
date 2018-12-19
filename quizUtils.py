@@ -75,10 +75,12 @@ class Participant(Thread):
                     answer = int(parts[1])
                     correct_answer = self.quiz.get_correct_option(question_number)
                     if int(correct_answer) == int(answer):
+                        print(change_style("{} answered correct".format(self.username), "green"))
                         self.score += 100
                         message = "{}|{}|{}".format(MESSAGE_TYPES["answer_response"], self.score,
                                                     "Congratulations!!! Your answer is correct.")
                     else:
+                        print(change_style("{} answered wrong".format(self.username), "red"))
                         message = "{}|{}|{}".format(MESSAGE_TYPES["answer_response"], self.score,
                                                     "LOSERRRR!!! Your answer is false. Correct answer is \"{}\"".format(
                                                         self.quiz.get_correct_answer(question_number)))
