@@ -9,10 +9,10 @@ class Quiz:
         self.questions = []
 
     def import_file(self, filename):
-        with open(filename) as file:
-            for line in file:
-                body, correct_answer, *options = line.strip().split("|")
-                self.new_question(body, options, correct_answer)
+        file = open(filename)
+        for line in file:
+            body, correct_answer, *options = line.strip().split("|")
+            self.new_question(body, options, correct_answer)
 
     def new_question(self, body, options, correct_answer):
         self.questions.append(Question(body, options, correct_answer))
@@ -61,30 +61,32 @@ class Participant(Thread):
         self.score = score
         self.connection = connection
         self.quiz = quiz
-        self.is_ended = False
 
     def run(self):
-        while not self.is_ended:
-            data = self.connection.recv(1024)
-            if not data:
-                break
-            type, *parts = data.decode().split('|')
+        while True:
+            try:
+                data = self.connection.recv(1024)
+                if not data:
+                    break
+                type, *parts = data.decode().split('|')
 
-            if int(type) == MESSAGE_TYPES['answer']:
-                question_number = int(parts[0])
-                answer = int(parts[1])
-                correct_answer = self.quiz.get_correct_option(question_number)
-                if int(correct_answer) == int(answer):
-                    self.score += 100
-                    message = "{}|{}|{}".format(MESSAGE_TYPES["answer_response"], self.score,
-                                                "Congratulations!!! Your answer is correct.")
+                if int(type) == MESSAGE_TYPES['answer']:
+                    question_number = int(parts[0])
+                    answer = int(parts[1])
+                    correct_answer = self.quiz.get_correct_option(question_number)
+                    if int(correct_answer) == int(answer):
+                        self.score += 100
+                        message = "{}|{}|{}".format(MESSAGE_TYPES["answer_response"], self.score,
+                                                    "Congratulations!!! Your answer is correct.")
+                    else:
+                        message = "{}|{}|{}".format(MESSAGE_TYPES["answer_response"], self.score,
+                                                    "LOSERRRR!!! Your answer is false. Correct answer is \"{}\"".format(
+                                                        self.quiz.get_correct_answer(question_number)))
+                    self.send_message(message)
                 else:
-                    message = "{}|{}|{}".format(MESSAGE_TYPES["answer_response"], self.score,
-                                                "LOSERRRR!!! Your answer is false. Correct answer is \"{}\"".format(
-                                                    self.quiz.get_correct_answer(question_number)))
-                self.send_message(message)
-            else:
-                print(type, parts)
+                    print(type, parts)
+            except:
+                pass
 
     def send_message(self, message):
         self.connection.send(message.encode())

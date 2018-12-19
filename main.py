@@ -1,6 +1,3 @@
-import sys
-import time
-
 from quizClient import *
 from quizServer import *
 from quizUtils import *
@@ -29,6 +26,9 @@ while True:
             clear()
             print_header("Import Quiz")
             filename = input("Enter file name: ")
+            while not os.path.isfile(filename):
+                print(change_style("\nPlease enter valid filename\n", "red"))
+                filename = input("Enter file name: ")
             quiz.import_file(filename)
         else:
             clear()

@@ -16,8 +16,8 @@ class QuizServer:
         self.is_ended = False
         self.current_question = None
         self.participants = {}
-        self.discovery_thread = None
-        self.quiz_thread = None
+        self.discovery_socket = None
+        self.quiz_socket = None
 
     def listen(self):
         self.listen_discovery_request()
@@ -50,8 +50,9 @@ class QuizServer:
         self.broadcast_message(message)
         self.print_scores()
         for p in self.participants.values():
-            p.is_ended = True
-        self.is_ended = True
+            p.close()
+        self.discovery_socket.close()
+        self.quiz_socket.close()
         enter_continue()
 
     def print_scores(self):
@@ -66,53 +67,59 @@ class QuizServer:
 
     def receive_discovery_request(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            self.discovery_socket = s
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((SELF_IP, DISCOVERY_PORT))
             s.listen()
-            while not self.is_ended:
-                conn, addr = s.accept()
+            while True:
+                try:
+                    conn, addr = s.accept()
 
-                data = conn.recv(1024)
-                if not data:
-                    break
+                    data = conn.recv(1024)
+                    if not data:
+                        break
 
-                message = str(data.decode('utf-8'))
-                type, source = message.split('|')
-                if int(type) == MESSAGE_TYPES["request"]:
-                    response = "{}|{}|{}".format(MESSAGE_TYPES["response"], SELF_IP, self.quiz.name)
-                    conn.send(response.encode())
-                conn.close()
-            s.close()
+                    message = str(data.decode('utf-8'))
+                    type, source = message.split('|')
+                    if int(type) == MESSAGE_TYPES["request"]:
+                        response = "{}|{}|{}".format(MESSAGE_TYPES["response"], SELF_IP, self.quiz.name)
+                        conn.send(response.encode())
+                    conn.close()
+                except:
+                    pass
 
     def receive_quiz_request(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            self.quiz_socket = s
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((SELF_IP, QUIZ_PORT))
             s.listen()
-            while not self.is_ended:
-                conn, addr = s.accept()
-                data = conn.recv(1024)
-                if not data:
-                    break
+            while True:
+                try:
+                    conn, addr = s.accept()
+                    data = conn.recv(1024)
+                    if not data:
+                        break
 
-                message = str(data.decode('utf-8'))
-                type, source, username = message.split('|')
-                if int(type) == MESSAGE_TYPES['enter']:
-                    if self.is_started:
-                        conn.send("{}|{}".format(MESSAGE_TYPES["error"], "Quiz is already started").encode())
-                    else:
-                        participant = Participant(username, source, self.quiz, 0, conn)
-                        participant.start()
-                        self.participants[source] = participant
-                        participant.send_message("{}|{}".format(MESSAGE_TYPES["success"],
-                                                                "You entered quiz \"{}\" successfully".format(
-                                                                    self.quiz.name)))
+                    message = str(data.decode('utf-8'))
+                    type, source, username = message.split('|')
+                    if int(type) == MESSAGE_TYPES['enter']:
+                        if self.is_started:
+                            conn.send("{}|{}".format(MESSAGE_TYPES["error"], "Quiz is already started").encode())
+                        else:
+                            participant = Participant(username, source, self.quiz, 0, conn)
+                            participant.start()
+                            self.participants[source] = participant
+                            participant.send_message("{}|{}".format(MESSAGE_TYPES["success"],
+                                                                    "You entered quiz \"{}\" successfully".format(
+                                                                        self.quiz.name)))
 
-                        clear()
-                        print_header("QUIZ: " + self.quiz.name)
-                        self.print_participants()
-                        print("\n\nEnter for start quiz")
-            s.close()
+                            clear()
+                            print_header("QUIZ: " + self.quiz.name)
+                            self.print_participants()
+                            print("\n\nEnter for start quiz")
+                except:
+                    pass
 
     def print_participants(self):
         if self.participants:
@@ -123,14 +130,14 @@ class QuizServer:
             print(change_style("NO PARTICIPANTS", 'bold'))
 
     def listen_discovery_request(self):
-        self.discovery_thread = threading.Thread(target=self.receive_discovery_request)
-        self.discovery_thread.setDaemon(True)
-        self.discovery_thread.start()
+        discovery_thread = threading.Thread(target=self.receive_discovery_request)
+        discovery_thread.setDaemon(True)
+        discovery_thread.start()
 
     def listen_quiz_request(self):
-        self.quiz_thread = threading.Thread(target=self.receive_quiz_request)
-        self.quiz_thread.setDaemon(True)
-        self.quiz_thread.start()
+        quiz_thread = threading.Thread(target=self.receive_quiz_request)
+        quiz_thread.setDaemon(True)
+        quiz_thread.start()
 
     def clear_dead_threads(self):
         deads = [p.ip for p in self.participants.values() if not p.is_alive()]
