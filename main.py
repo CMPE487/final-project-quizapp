@@ -53,10 +53,10 @@ while True:
         quiz.print()
         enter_continue()
         quizServer = QuizServer(quiz)
-        quizServer.start()
-        while True:
-            print(quizServer.participants)
-            time.sleep(1)
+        quizServer.listen()
+        print_header("QUIZ: " + quiz.name)
+        print(change_style("\n\nWAITING FOR NEW PARTICIPANTS\n\n", 'bold'))
+        tmp = input("Enter for start quiz")
 
     elif option == "2":
         for i, quiz_name in enumerate(quizClient.available_quizzes.values()):

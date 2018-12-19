@@ -13,7 +13,7 @@ class QuizServer:
         self.quiz = quiz
         self.participants = {}
 
-    def start(self):
+    def listen(self):
         self.listen_discovery_request()
         self.listen_quiz_request()
 
@@ -56,7 +56,19 @@ class QuizServer:
                     participant = Participant(username, source, 0, conn)
                     participant.start()
                     self.participants[source] = participant
+                    clear()
+                    print_header("QUIZ: " + self.quiz.name)
+                    self.print_participants()
+                    print("\n\nEnter for start quiz")
             s.close()
+
+    def print_participants(self):
+        if self.participants:
+            print(change_style("{} PARTICIPANTS".format(len(self.participants)), 'bold'))
+            for participant in self.participants.values():
+                print(change_style(participant.username, "receiver") + " - " + participant.ip)
+        else:
+            print(change_style("NO PARTICIPANTS", 'bold'))
 
     def listen_discovery_request(self):
         discovery_thread = threading.Thread(target=self.receive_discovery_request)
