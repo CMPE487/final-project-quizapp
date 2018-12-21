@@ -11,7 +11,7 @@ while True:
     option = select_option([
         "Start new quiz",
         "Enter a quiz",
-        "Manuel quiz discovery",
+        "Manual quiz discovery",
         "Quit"
     ], header="AVAILABLE COMMANDS")
 
@@ -44,6 +44,7 @@ while True:
         quiz_server = QuizServer(quiz)
         quiz_server.listen()
         print_header("QUIZ: " + quiz.name)
+        print(change_style("QUIZ IP: " + change_style(SELF_IP, 'bold'), 'green'))
         print(change_style("\n\nWAITING FOR NEW PARTICIPANTS\n\n", 'bold'))
         tmp = input("Enter for start quiz")
         quiz_server.start()
@@ -61,7 +62,7 @@ while True:
 
     elif option == "3":
         clear()
-        print_header("Manuel Quiz Discovery")
+        print_header("Manual Quiz Discovery")
         quiz_client.broadcast_quiz(False)
         quiz_ip = input(change_style("Enter quiz server IP address (i.e: 192.168.6.150)", "underline") + ": ")
         start_new_thread(quiz_client.send_discovery_packet, (quiz_ip, False))

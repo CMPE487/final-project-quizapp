@@ -117,6 +117,7 @@ class QuizServer:
 
                             clear()
                             print_header("QUIZ: " + self.quiz.name)
+                            print(change_style("QUIZ IP: " + change_style(SELF_IP + "\n", 'bold'), 'green'))
                             self.print_participants()
                             print("\n\nEnter for start quiz")
                 except:
