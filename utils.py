@@ -98,14 +98,14 @@ def print_notification(str):
 
 
 def print_timer(count):
-    if count % 4 == 0:
-        sym = "|"
-    elif count % 4 == 1:
+    if count % 4 == 1:
         sym = "/"
     elif count % 4 == 2:
         sym = "–"
     elif count % 4 == 3:
         sym = "\\"
+    else:
+        sym = "|"
 
     print("\033[s \033[100F \033[2K \r{} {}\033[u \033[2D".format(
         change_style("Remaining Time: ", "underlined").rjust(50),

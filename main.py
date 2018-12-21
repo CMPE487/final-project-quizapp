@@ -11,7 +11,7 @@ while True:
     option = select_option([
         "Start new quiz",
         "Enter a quiz",
-        "Broadcast quiz",
+        "Manuel quiz discovery",
         "Quit"
     ], header="AVAILABLE COMMANDS")
 
@@ -61,8 +61,13 @@ while True:
 
     elif option == "3":
         clear()
-        print_header("Discover quizzes")
+        print_header("Manuel Quiz Discovery")
         quiz_client.broadcast_quiz(False)
+        quiz_ip = input(change_style("Enter quiz server IP address (i.e: 192.168.6.150)", "underline") + ": ")
+        start_new_thread(quiz_client.send_discovery_packet, (quiz_ip, False))
+        clear()
+        print_notification("Discovery request sent to " + quiz_ip)
+
     elif option == "4":
         clear()
         print_notification("Good bye \n\n")
