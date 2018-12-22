@@ -1,0 +1,5 @@
+Berlin is the capital of which country?|3|Belgium|Netherlands|Germany|Iran
+You want to make green paint. Which colors do you mix together?|2|Red and yellow|Blue and yellow|Orange and purple|White and black
+Which is the longest river in the world?|2|Amazon|Nile|Mississippi|Kızılırmak
+What language do most people in Austria speak?|1|German|Austrian|Hungarian|Turkish
+Which country is closer to the North Pole?|2|Gambia|Finland|China|North Korea
