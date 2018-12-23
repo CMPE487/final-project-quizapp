@@ -3,8 +3,6 @@
 
 ## Network-Based Realtime Multiple-Choice Quiz Application
 
-### Project Definition
-
 - Moderator creates quizzes manually or imports from prepared text files. 
 - Participants connect to the quiz room that is on the server.
 - When moderator starts session, participants compete for correct answers. 
@@ -21,7 +19,6 @@ bash $ python3 main.py
 - [Oğuzhan Yetimoğlu](https://github.com/oguzhanyetimoglu)  
 
 (We did pair programming)
-
 
 
 ### License
