@@ -28,9 +28,9 @@ class Quiz:
 
     def print(self):
         print_header("QUIZ: " + self.name)
-        for question in self.questions:
+        for number, question in enumerate(self.questions):
             print()
-            print(change_style("Question: ", "question") + change_style(question.body, "bold"))
+            print(change_style("Question {}: ".format(number + 1), "question") + change_style(question.body, "bold"))
             for i, option in enumerate(question.options):
                 print(change_style(str(i + 1) + ") ", "bold") + option)
 

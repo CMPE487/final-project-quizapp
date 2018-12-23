@@ -107,9 +107,15 @@ def print_timer(count):
     else:
         sym = "|"
 
-    print("\033[s \033[100F \033[2K \r{} {}\033[u \033[2D".format(
+    os.system("tput sc;")
+    print("\033[100F \033[2K \r{} {}".format(
         change_style("Remaining Time: ", "underlined").rjust(50),
         change_style(str(count // 4).rjust(2) + " seconds " + sym, "bold")), end="")
+    os.system("tput rc;")
+    # os.system("echo `tput ll`;")
+    # print("\033[s \033[100F \033[2K \r{} {}\033[u".format(
+    #     change_style("Remaining Time: ", "underlined").rjust(50),
+    #     change_style(str(count // 4).rjust(2) + " seconds " + sym, "bold")), end="")
 
 
 def print_error(str):

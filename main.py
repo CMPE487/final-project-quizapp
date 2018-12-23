@@ -15,6 +15,7 @@ while True:
         "Quit"
     ], header="AVAILABLE COMMANDS")
 
+
     if option == "1":
         clear()
         print_header("Start New Quiz")

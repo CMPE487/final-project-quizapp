@@ -75,9 +75,13 @@ class QuizClient():
                     start_timer(QUESTION_TIME)
                     answer = select_option(options, prompt="Your answer", timeout=QUESTION_TIME)
                     if answer:
+                        if int(answer) > 4 or int(answer) < 0:
+                            print(change_style("\nInvalid answer\n", "red"))
+                        else:
+                            print("\nSubmitted answer is \"{}\"".format(options[int(answer) - 1]))
+
                         message = "{}|{}|{}".format(MESSAGE_TYPES["answer"], number, answer)
                         s.send(message.encode())
-                        print("\nSubmitted answer is \"{}\"".format(options[int(answer) - 1]))
                     else:
                         print("\nTime is up. You got {} point".format(change_style("ZERO", "bold")))
                 elif type == MESSAGE_TYPES["answer_response"]:
