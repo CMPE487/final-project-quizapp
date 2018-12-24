@@ -1,5 +1,0 @@
-Which chess piece is of the lowest theoretical value?|2|Knight|Pawn|Bishop|Castle
-Who was the first person on the moon?|3|John Glenn|Buzz Aldrin|Neil Armstrong|Yuri Gagarin
-When French Revolution happened?|1|1789|1453|1994|2012
-The unit of current is _________.|3|Ohm|Watt|Ampere|Tesla
-Who is the author of the From the Earth to the Moon?|4|H. G. Wells|Alexandre Dumas|Aldous Huxley|Jules Verne
