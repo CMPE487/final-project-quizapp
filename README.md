@@ -1,13 +1,15 @@
 # CmpE 487 Final Project
-![Logo](logo.png)
-
 ## Network-Based Realtime Multiple-Choice Quiz Application
+<p align="center">
+    <img src="https://github.com/CMPE487/final-project-quizapp/raw/master/logo.png" width="50%" height="auto" align="center">
+</p>
 
 - Moderator creates quizzes manually or imports from prepared text files. 
 - Participants connect to the quiz room that is on the server.
 - When moderator starts session, participants compete for correct answers. 
 - Participants have 10 seconds for each question
 #### [Final Presentation PDF](https://github.com/CMPE487/final-project-quizapp/blob/master/Presentation.pdf)
+
 ### Usage
 Run following command for both Server or Client
 ```
